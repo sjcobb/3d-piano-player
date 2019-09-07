@@ -1,6 +1,8 @@
 <html>
     <head>
         <title>3D Piano Player (Three.js)</title>
+
+        <!-- THREE JS: VERSION 61-->
         <script src="js/three.js"></script>
 
         <script src="js/OrbitAndPanControls.js"></script>
@@ -128,8 +130,9 @@
             init_lights();
 
             var loader = new THREE.ColladaLoader();
-
-            loader.load( 'obj/piano.dae', prepare_scene );
+            loader.crossOrigin = '';
+            // loader.load( 'obj/piano.dae', prepare_scene );
+            loader.load( 'https://raw.githubusercontent.com/reality3d/3d-piano-player/master/obj/piano.dae', prepare_scene );
 
             camera.position.x = -2.77;
             camera.position.z = 10.04;
@@ -274,8 +277,8 @@
 
             frame();
 
-            function keyCode_to_note( keyCode)
-            {
+            function keyCode_to_note(keyCode) {
+                console.log('keyCode_to_note -> orig keyCode: ', keyCode);
                 var note = -1;
                 //-----------------------------------
                 if(   keyCode==90 )  note= 0; // C 0
@@ -334,6 +337,7 @@
 
                         var delay = 0; // play one note every quarter second
                         var note = parseInt(note.substr(1))+21; // the MIDI note
+                        console.log('onkeydown -> MIDI note: ', note);
                         var velocity = 127; // how hard the note hits
                         MIDI.setVolume(0, 127);   
                         MIDI.noteOn(0, note, velocity, delay);                        
@@ -362,10 +366,12 @@
             {
                 MIDI.loadPlugin(function ()
                 {
-                    //MIDI.Player.loadFile(song[0], MIDI.Player.start);
+                    //MIDI.Player.loadFile(song[0], MIDI.Player.start); //err
                     MIDI.Player.timeWarp = 1.0; // speed the song is played back
-                    MIDI.Player.loadFile("midi/" + controls.song);                    
-                    
+                    // MIDI.Player.loadFile("midi/" + controls.song); 
+                    MIDI.Player.loadFile("https://raw.githubusercontent.com/reality3d/3d-piano-player/master/midi/" + controls.song);
+
+
                     MIDI.Player.addListener(function(data)
                     {
                         var pianoKey = data.note - MIDI.pianoKeyOffset - 3;
